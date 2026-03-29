@@ -1,0 +1,13 @@
+# --- Preprocessing / 数据预处理 ---
+opencv-python>=4.8.0
+tqdm>=4.65.0
+
+# --- Training / 训练 ---
+# Install CUDA PyTorch first, then the rest. 请先安装 CUDA 版 PyTorch，例如：
+# py -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+ultralytics>=8.3.0
+
+# --- Web API + UI / 推理网页 ---
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9

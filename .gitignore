@@ -1,0 +1,35 @@
+# 数据与生成物（体积大 / 不入库）
+data/
+yolo_dataset/
+runs/
+*.pt
+*.onnx
+*.engine
+
+# Web 推理输出
+web/outputs/
+
+# 预览与缓存
+preview/
+__pycache__/
+*.py[cod]
+.Python
+*.log
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+
+# Misc
+check_data_run.log

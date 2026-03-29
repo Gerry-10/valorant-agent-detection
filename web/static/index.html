@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Valorant agent detection — YOLOv8 demo UI / 无畏契约特工目标检测演示" />
+  <title>Valorant Agent Detection · 特工检测</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="hero">
+    <p class="hero-badge">YOLOv8 · Ultralytics · FastAPI</p>
+    <h1 class="hero-title">
+      <span class="hero-title-cn">Valorant 特工检测</span>
+      <span class="hero-title-en">Agent detection demo</span>
+    </h1>
+    <p class="hero-desc">
+      <span class="bilingual"><span class="cn">本地推理与可视化 · 默认权重</span><span class="sep">·</span><span class="en">Local inference · default weights</span></span>
+      <code class="hero-code">runs/valorant/train/weights/best.pt</code>
+    </p>
+    <p class="hero-api">
+      <span class="label-cn">API</span>
+      <span class="label-en">Base URL</span>
+      <span id="api-base" class="api-url"></span>
+    </p>
+  </header>
+
+  <main class="main">
+    <section class="card card-settings">
+      <div class="card-head">
+        <h2 class="card-title">
+          <span class="title-cn">置信度阈值</span>
+          <span class="title-en">Confidence threshold</span>
+        </h2>
+      </div>
+      <p class="hint bilingual-hint">
+        <span class="cn">仅显示置信度 ≥ 此值的检测框；调高可减少 UI / 武器误检。默认 0.5。</span>
+        <span class="en">Only boxes with score ≥ this value. Raise to reduce false positives (UI, weapons). Default 0.5.</span>
+      </p>
+      <div class="slider-block">
+        <div class="slider-labels">
+          <span class="label-cn">阈值</span>
+          <span class="label-en">Value</span>
+          <strong id="conf-val" class="conf-num">0.50</strong>
+        </div>
+        <input type="range" id="conf-slider" class="conf-slider" min="0.25" max="0.95" step="0.05" value="0.5" aria-label="Confidence threshold" />
+        <div class="slider-ticks"><span>0.25</span><span>0.60</span><span>0.95</span></div>
+      </div>
+    </section>
+
+    <section class="card card-action">
+      <div class="card-head">
+        <h2 class="card-title">
+          <span class="title-cn">图片检测</span>
+          <span class="title-en">Image detection</span>
+        </h2>
+      </div>
+      <p class="hint bilingual-hint">
+        <span class="cn">上传截图，返回 JSON 与带框预览。</span>
+        <span class="en">Upload a screenshot; get JSON + annotated preview.</span>
+      </p>
+      <div class="upload-row">
+        <label class="file-label">
+          <input type="file" id="img-input" class="file-input" accept="image/*" />
+          <span class="file-btn">
+            <span class="cn">选择图片</span>
+            <span class="en">Choose image</span>
+          </span>
+          <span id="img-filename" class="file-name"></span>
+        </label>
+        <button type="button" id="img-btn" class="btn btn-primary" disabled>
+          <span class="cn">开始检测</span>
+          <span class="en">Run</span>
+        </button>
+      </div>
+      <div id="img-status" class="status" role="status"></div>
+      <details class="json-details">
+        <summary><span class="cn">检测结果 JSON</span> <span class="en">/ Detections JSON</span></summary>
+        <pre id="img-meta" class="meta"></pre>
+      </details>
+      <div class="preview-wrap">
+        <img id="img-out" class="preview-img" alt="Detection result" hidden />
+      </div>
+    </section>
+
+    <section class="card card-action">
+      <div class="card-head">
+        <h2 class="card-title">
+          <span class="title-cn">离线视频</span>
+          <span class="title-en">Offline video</span>
+        </h2>
+      </div>
+      <p class="hint bilingual-hint">
+        <span class="cn">上传整段视频；服务端逐帧推理并合成新视频。大文件需等待；建议安装 ffmpeg 以便浏览器播放。</span>
+        <span class="en">Upload a clip; server runs frame-wise inference. Large files take time; install ffmpeg for browser-friendly MP4.</span>
+      </p>
+      <div class="upload-row">
+        <label class="file-label">
+          <input type="file" id="vid-input" class="file-input" accept="video/*,.mp4,.avi,.mov,.mkv" />
+          <span class="file-btn">
+            <span class="cn">选择视频</span>
+            <span class="en">Choose video</span>
+          </span>
+          <span id="vid-filename" class="file-name"></span>
+        </label>
+        <button type="button" id="vid-btn" class="btn btn-primary" disabled>
+          <span class="cn">开始处理</span>
+          <span class="en">Process</span>
+        </button>
+      </div>
+      <div id="vid-status" class="status" role="status"></div>
+      <p id="vid-meta" class="meta-inline"></p>
+      <video id="vid-out" class="preview-vid" controls playsinline hidden></video>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      <span class="cn">个人学习 / 演示项目 · 检测效果受数据与模型影响</span>
+      <span class="dot">·</span>
+      <span class="en">Learning demo · results depend on data &amp; model quality</span>
+    </p>
+    <p class="footer-repo">
+      <span class="cn">详见仓库</span> <span class="en">See repository</span> <code>README.md</code>
+    </p>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
